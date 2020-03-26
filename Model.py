@@ -35,6 +35,12 @@ nullValues=pd.concat([total, per], axis=1, keys=['Total Null Values', 'Percentag
 print(nullValues)
 ## 
 
+
+## Random shuffling
+dataset=shuffle(dataset)
+##
+
+
 ## mapping categories
 status={"ontime":0, "delayed":1}
 carriers=dataset["CARRIER"].unique()
@@ -111,14 +117,13 @@ x0=np.ones(np.size(y))
 X=np.vstack([ carrier, origin, dest, timediff, weekday, weather])
 X=X.T
 
-X, y1=shuffle(X, y)
 ## Breaking dataset into 60:40 ratio
 datasize=y.size
 trainsize=int(datasize*0.6)
 df_train=X[0:trainsize, :]
-y_train=y1[0:trainsize]
+y_train=y[0:trainsize]
 df_test=X[trainsize:datasize, :]
-y_test=y1[trainsize:datasize]
+y_test=y[trainsize:datasize]
 ##
 
 
@@ -140,14 +145,13 @@ print("F1 score:", f1_score(y_test, y_pred, average='macro'))
 X=np.vstack([origin, dest, timediff, weather])
 X=X.T
 
-X, y2=shuffle(X, y)
 ## Breaking dataset into 60:40 ratio
 datasize=y.size
 trainsize=int(datasize*0.6)
 df_train=X[0:trainsize, :]
-y_train=y2[0:trainsize]
+y_train=y[0:trainsize]
 df_test=X[trainsize:datasize, :]
-y_test=y2[trainsize:datasize]
+y_test=y[trainsize:datasize]
 ##
 
 clf = DecisionTreeClassifier()
@@ -163,14 +167,13 @@ print("F1 score:", f1_score(y_test, y_pred, average='macro'))
 X=np.vstack([x0, origin, dest, timediff, weather])
 X=X.T
 
-X, y3=shuffle(X, y)
 ## Breaking dataset into 60:40 ratio
 datasize=y.size
 trainsize=int(datasize*0.6)
 df_train=X[0:trainsize, :]
-y_train=y3[0:trainsize]
+y_train=y[0:trainsize]
 df_test=X[trainsize:datasize, :]
-y_test=y3[trainsize:datasize]
+y_test=y[trainsize:datasize]
 ##
 
 from simpleLogistic import *
