@@ -17,6 +17,10 @@ try:
     import matplotlib.style 
 except:
     os.system("sudo pip install matplotlib")
+try:
+    from sklearn.utils import shuffle
+except:
+    os.system("sudo pip install scikit-learn")
 
 ####
 
@@ -86,12 +90,11 @@ plt.show()
 ## Creating a new feature
 timediff=np.array(dataset["DEP_TIME"]-dataset["CRS_DEP_TIME"])
 test=np.array(dataset["DEP_TIME"])
-test=test/100
+test=test//100
 dataset["DEP_TIME"]=test
 ##
 
 ## Preparing feature vector
-np.random.shuffle(dataset.values)
 
 y=np.array(dataset["Flight Status"])
 carrier=np.array(dataset["CARRIER"])
@@ -108,20 +111,21 @@ x0=np.ones(np.size(y))
 X=np.vstack([ carrier, origin, dest, timediff, weekday, weather])
 X=X.T
 
+X, y1=shuffle(X, y)
 ## Breaking dataset into 60:40 ratio
 datasize=y.size
 trainsize=int(datasize*0.6)
 df_train=X[0:trainsize, :]
-y_train=y[0:trainsize]
+y_train=y1[0:trainsize]
 df_test=X[trainsize:datasize, :]
-y_test=y[trainsize:datasize]
+y_test=y1[trainsize:datasize]
 ##
 
-try:
-    from sklearn.tree import DecisionTreeClassifier
-    from sklearn.metrics import f1_score
-except ImportError:
-    os.system("sudo pip install scikit-learn")
+
+from sklearn.tree import DecisionTreeClassifier
+from sklearn.metrics import f1_score
+
+    
 
 clf = DecisionTreeClassifier()
 clf = clf.fit(df_train,y_train)
@@ -136,13 +140,14 @@ print("F1 score:", f1_score(y_test, y_pred, average='macro'))
 X=np.vstack([origin, dest, timediff, weather])
 X=X.T
 
+X, y2=shuffle(X, y)
 ## Breaking dataset into 60:40 ratio
 datasize=y.size
 trainsize=int(datasize*0.6)
 df_train=X[0:trainsize, :]
-y_train=y[0:trainsize]
+y_train=y2[0:trainsize]
 df_test=X[trainsize:datasize, :]
-y_test=y[trainsize:datasize]
+y_test=y2[trainsize:datasize]
 ##
 
 clf = DecisionTreeClassifier()
@@ -158,13 +163,14 @@ print("F1 score:", f1_score(y_test, y_pred, average='macro'))
 X=np.vstack([x0, origin, dest, timediff, weather])
 X=X.T
 
+X, y3=shuffle(X, y)
 ## Breaking dataset into 60:40 ratio
 datasize=y.size
 trainsize=int(datasize*0.6)
 df_train=X[0:trainsize, :]
-y_train=y[0:trainsize]
+y_train=y3[0:trainsize]
 df_test=X[trainsize:datasize, :]
-y_test=y[trainsize:datasize]
+y_test=y3[trainsize:datasize]
 ##
 
 from simpleLogistic import *
@@ -199,4 +205,3 @@ y_pred=svm_predict(df_test, weights)
 print("Linear SVM")
 print("Accuracy:", accu)
 print("F1 Score:", f1_score(y_test, y_pred, average='macro'))
-
