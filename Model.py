@@ -142,7 +142,7 @@ print("F1 score:", f1_score(y_test, y_pred, average='macro'))
 
 ## Fitting decision tree on best 4 features
 
-X=np.vstack([origin, dest, timediff, weather])
+X=np.vstack([carrier, dest, timediff, weekday])
 X=X.T
 
 ## Breaking dataset into 60:40 ratio
@@ -164,7 +164,7 @@ print("F1 score:", f1_score(y_test, y_pred, average='macro'))
 
 ## Fitting Logistic Regression on top 4 features
 
-X=np.vstack([x0, origin, dest, timediff, weather])
+X=np.vstack([x0, carrier, dest, timediff, weekday])
 X=X.T
 
 ## Breaking dataset into 60:40 ratio
