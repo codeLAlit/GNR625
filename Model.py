@@ -164,8 +164,26 @@ print("F1 score:", f1_score(y_test, y_pred, average='macro'))
 
 ## Fitting Logistic Regression on top 4 features
 
-X=np.vstack([x0, carrier, dest, timediff, weekday])
-X=X.T
+originVerbose=np.zeros((y.size, len(originDict)))
+originVerbose[np.arange(y.size), origin]=1
+
+carrierVerbose=np.zeros((y.size, len(carrierDict)))
+carrierVerbose[np.arange(y.size), carrier]=1
+
+destVerbose=np.zeros((y.size, len(destDict)))
+destVerbose[np.arange(y.size), dest]=1
+
+weekdayVerbose=np.zeros((y.size, 7))
+weekdayVerbose[np.arange(y.size), weekday-1]=1
+
+from sklearn.preprocessing import StandardScaler
+scale=StandardScaler()
+timediffScaled=scale.fit_transform(timediff.reshape(y.size, 1))
+
+deptimeVerbose=np.zeros((y.size, deptime.max()-deptime.min()+1))
+deptimeVerbose[np.arange(y.size), deptime]=1
+
+X=np.hstack((x0.reshape(y.size,1), carrierVerbose, destVerbose, timediffScaled, weekdayVerbose, weather.reshape(y.size, 1)))
 
 ## Breaking dataset into 60:40 ratio
 datasize=y.size
@@ -180,7 +198,7 @@ from simpleLogistic import *
 dim=X.shape[1]
 classes=1
 initialWeights=0.001*np.random.randn(dim, classes)
-cost_history, weights=logistic_train(df_train, y_train, initialWeights, reg=0.01, learning_rate=5e-3, iterations=1500)
+cost_history, weights=logistic_train(df_train, y_train, initialWeights, reg=10, learning_rate=0.085, iterations=1500)
 plt.plot(cost_history)
 plt.xlabel("epochs")
 plt.ylabel("Cost")
@@ -190,6 +208,16 @@ y_pred=logistic_predict(df_test, weights)
 print("Logistic Regression")
 print("Accuracy:", accu)
 print("F1 Score:", f1_score(y_test, y_pred, average='macro'))
+
+
+from sklearn.linear_model import LogisticRegression
+logisticRegr = LogisticRegression()
+logisticRegr.fit(df_train, y_train)
+predictions = logisticRegr.predict(df_test)
+print("Logistic Regression (Sklearn Algorithm)")
+print("Accuracy", np.mean(predictions==y_test))
+print("F1 Score", f1_score(y_test, predictions, average='macro'))
+
 
 ## Fitting Linear SVM
 
@@ -208,3 +236,13 @@ y_pred=svm_predict(df_test, weights)
 print("Linear SVM")
 print("Accuracy:", accu)
 print("F1 Score:", f1_score(y_test, y_pred, average='macro'))
+
+from sklearn import svm
+
+clf = svm.SVC(kernel='linear') 
+clf.fit(df_train, y_train)
+y_pred = clf.predict(df_test)
+accu=np.mean(y_pred==y_test)
+print("Linear SVM (Sklearn Algorithm)")
+print("Accuracy", accu)
+print("F1 Score", f1_score(y_test, y_pred, average='macro'))
