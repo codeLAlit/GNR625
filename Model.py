@@ -183,7 +183,13 @@ timediffScaled=scale.fit_transform(timediff.reshape(y.size, 1))
 deptimeVerbose=np.zeros((y.size, deptime.max()-deptime.min()+1))
 deptimeVerbose[np.arange(y.size), deptime]=1
 
-X=np.hstack((carrierVerbose, destVerbose, timediffScaled, weekdayVerbose, weather.reshape(y.size, 1)))
+timediffIntervals=timediff/25
+timediffIntervals[timediffIntervals<=0]=0
+
+timediffVerbose=np.zeros((y.size, timediffIntervals.max()-timediffIntervals.min()+1))
+timediffVerbose[np.arange(y.size), timediffIntervals]=1
+
+X=np.hstack((carrierVerbose, destVerbose, timediffVerbose, weekdayVerbose, weather.reshape(y.size, 1)))
 
 ## Breaking dataset into 60:40 ratio
 datasize=y.size
