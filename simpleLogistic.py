@@ -22,6 +22,7 @@ def logistic_loss(X, y, W, reg):
         loss=lossI.sum()/m
         loss=-1*loss
         regterm=reg*(np.sum(W*W)-np.sum(W[0]*W[0]))/(2*m)
+        # regterm=reg*(np.sum(W*W))/(2*m)
         loss+=regterm
         
         some=(X.T).dot((H-y))
@@ -33,6 +34,7 @@ def logistic_loss(X, y, W, reg):
 
 def logistic_train(X, y, W, reg, learning_rate, iterations):
         cost_history=[]
+        X=np.hstack((np.ones((y.size,1)), X))
         Weights=np.array(W)
         num_train=y.size
         batch_size=1200
@@ -48,16 +50,16 @@ def logistic_train(X, y, W, reg, learning_rate, iterations):
             
         return cost_history, Weights
 
-def logistic_predict(X, W):
-       
+def logistic_predict(X, W, threshold):
+        X=np.hstack((np.ones((X.shape[0],1)), X))
         class_pred=sigmoid(X.dot(W))
         y_pred=np.zeros(X.shape[0])
-        y_pred=(class_pred>0.5)
+        y_pred=(class_pred>=threshold)
         
         return y_pred
 
 
-def logistic_accuracy(X, y, W):
-        y_pred=logistic_predict(X, W)
+def logistic_accuracy(X, y, W, threshold):
+        y_pred=logistic_predict(X, W, threshold)
         y_correct=np.mean(y_pred==y)
         return y_correct 

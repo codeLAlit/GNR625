@@ -27,6 +27,7 @@ def svm_train(X, y, W, reg, learning_rate, iterations):
         Weights=np.array(W)
         num_train=y.size
         batch_size=1200
+        X=np.hstack((np.ones((X.shape[0],1)), X))
         cost_history=[]
         for epoch in range(iterations):
             indices=np.random.choice(num_train, batch_size, replace=False)
@@ -40,6 +41,7 @@ def svm_train(X, y, W, reg, learning_rate, iterations):
 
 
 def svm_predict(X, W):
+        X=np.hstack((np.ones((X.shape[0],1)), X))
         class_pred=X.dot(W)
         y_pred=np.zeros(X.shape[0])
         y_pred=class_pred.argmax(axis=1)

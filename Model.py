@@ -183,7 +183,7 @@ timediffScaled=scale.fit_transform(timediff.reshape(y.size, 1))
 deptimeVerbose=np.zeros((y.size, deptime.max()-deptime.min()+1))
 deptimeVerbose[np.arange(y.size), deptime]=1
 
-X=np.hstack((x0.reshape(y.size,1), carrierVerbose, destVerbose, timediffScaled, weekdayVerbose, weather.reshape(y.size, 1)))
+X=np.hstack((carrierVerbose, destVerbose, timediffScaled, weekdayVerbose, weather.reshape(y.size, 1)))
 
 ## Breaking dataset into 60:40 ratio
 datasize=y.size
@@ -195,16 +195,16 @@ y_test=y[trainsize:datasize]
 ##
 
 from simpleLogistic import *
-dim=X.shape[1]
+dim=X.shape[1]+1
 classes=1
 initialWeights=0.001*np.random.randn(dim, classes)
-cost_history, weights=logistic_train(df_train, y_train, initialWeights, reg=10, learning_rate=0.085, iterations=1500)
+cost_history, weights=logistic_train(df_train, y_train, initialWeights, reg=0.065, learning_rate=6e-2, iterations=2000)
 plt.plot(cost_history)
 plt.xlabel("epochs")
 plt.ylabel("Cost")
 plt.show()
-accu=logistic_accuracy(df_test, y_test, weights)
-y_pred=logistic_predict(df_test, weights)
+accu=logistic_accuracy(df_test, y_test, weights, threshold=0.5)
+y_pred=logistic_predict(df_test, weights, threshold=0.5)
 print("Logistic Regression")
 print("Accuracy:", accu)
 print("F1 Score:", f1_score(y_test, y_pred, average='macro'))
@@ -222,11 +222,11 @@ print("F1 Score", f1_score(y_test, predictions, average='macro'))
 ## Fitting Linear SVM
 
 from linear_svm import *
-dim=X.shape[1]
+dim=X.shape[1]+1
 classes=np.max(y)+1
 initialWeights=0.001*np.random.randn(dim, classes)
 initial=np.zeros(dim*classes).reshape(dim, classes)
-cost_history, weights=svm_train(df_train, y_train, initialWeights, reg=4e4, learning_rate=1e-7, iterations=1500)
+cost_history, weights=svm_train(df_train, y_train, initialWeights, reg=0.105, learning_rate=6e-2, iterations=2000)
 plt.plot(cost_history)
 plt.xlabel("epochs")
 plt.ylabel("Cost")
